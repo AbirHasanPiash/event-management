@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+
+{% block title %} {% if form.instance.pk %} Update Event {% else %} Create New Event {% endif %} {% endblock %}
+
+{% block content %}
+<div class="container mx-auto p-8">
+    <div class="max-w-2xl mx-auto bg-white shadow-md rounded-lg p-8">
+        <h1 class="text-3xl font-bold mb-6 text-center text-gray-800">
+            {% if form.instance.pk %} Update Event {% else %} Create New Event {% endif %}
+        </h1>
+
+        <form method="post" class="space-y-6">
+            {% csrf_token %}
+            
+            {% for field in form %}
+            <div>
+                <label class="block text-gray-700 font-semibold mb-2" for="{{ field.id_for_label }}">
+                    {{ field.label }}
+                </label>
+                
+                <!-- Apply Custom Input Styles with Placeholders for Date and Time -->
+                {% if field.field.widget.input_type == 'text' or field.field.widget.input_type == 'email' or field.field.widget.input_type == 'number' or field.field.widget.input_type == 'url' %}
+                    <input type="{{ field.field.widget.input_type }}" name="{{ field.name }}" id="{{ field.id_for_label }}"
+                           value="{{ field.value|default:'' }}"
+                           class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                           {% if field.name == 'date' %} placeholder="YYYY-MM-DD (e.g., 2025-03-24)" {% endif %}
+                           {% if field.name == 'time' %} placeholder="HH:MM (24-hour format, e.g., 14:30)" {% endif %}
+                    />
+                
+                {% elif field.field.widget.input_type == 'textarea' %}
+                    <textarea name="{{ field.name }}" id="{{ field.id_for_label }}" rows="4"
+                              class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">{{ field.value|default:'' }}</textarea>
+
+                {% elif field.field.widget.input_type == 'select' %}
+                    {{ field }}
+                    <style>
+                        select {
+                            @apply w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent;
+                        }
+                    </style>
+                
+                {% else %}
+                    {{ field }}
+                {% endif %}
+                
+                {% if field.errors %}
+                <p class="text-red-500 text-sm mt-1">{{ field.errors.0 }}</p>
+                {% endif %}
+            </div>
+            {% endfor %}
+            
+            <div class="flex justify-between items-center mt-8">
+                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg">
+                    {% if form.instance.pk %} Update Event {% else %} Create Event {% endif %}
+                </button>
+                
+                <a href="{% url 'event_list' %}" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-6 rounded-lg">
+                    Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

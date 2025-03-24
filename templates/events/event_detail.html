@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block title %}Event Details{% endblock %}
+
+{% block content %}
+  <h1 class="text-2xl font-bold mb-4">{{ event.name }}</h1>
+  <p><strong>Description:</strong> {{ event.description }}</p>
+  <p><strong>Date:</strong> {{ event.date }}</p>
+  <p><strong>Time:</strong> {{ event.time }}</p>
+  <p><strong>Location:</strong> {{ event.location }}</p>
+  <p><strong>Category:</strong> {{ event.category.name }}</p>
+
+  <h2 class="text-xl font-bold mt-6">Participants</h2>
+  {% if event.participants.all %}
+    <ul class="list-disc list-inside">
+      {% for participant in event.participants.all %}
+        <li>{{ participant.name }} ({{ participant.email }})</li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>No participants registered for this event.</p>
+  {% endif %}
+
+  <div class="mt-6">
+    <a href="{% url 'event_update' event.pk %}" class="bg-yellow-500 text-white px-4 py-2 rounded mr-2">Edit</a>
+    <a href="{% url 'event_delete' event.pk %}" class="bg-red-600 text-white px-4 py-2 rounded">Delete</a>
+    <a href="{% url 'event_list' %}" class="ml-4 text-gray-600">Back to Events</a>
+  </div>
+{% endblock %}

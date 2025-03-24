@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block title %} Participants List {% endblock %}
+
+{% block content %}
+<div class="container mx-auto p-8">
+    <h1 class="text-3xl font-bold mb-6">Participants List</h1>
+    
+    {% if participants %}
+    <table class="min-w-full table-auto border-collapse border border-gray-300">
+        <thead>
+            <tr class="bg-gray-200">
+                <th class="border border-gray-300 px-4 py-2">Name</th>
+                <th class="border border-gray-300 px-4 py-2">Email</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for participant in participants %}
+            <tr class="hover:bg-gray-50">
+                <td class="border border-gray-300 px-4 py-2">{{ participant.name }}</td>
+                <td class="border border-gray-300 px-4 py-2">{{ participant.email }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p class="text-red-500">No participants found.</p>
+    {% endif %}
+    
+    <a href="{% url 'participant_create' %}" class="mt-4 inline-block bg-blue-500 text-white px-4 py-2 rounded">Add New Participant</a>
+    <a href="{% url 'event_list' %}" class="mt-4 inline-block bg-gray-500 text-white px-4 py-2 rounded">Back to Events</a>
+</div>
+{% endblock %}
