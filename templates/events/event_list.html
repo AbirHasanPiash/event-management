@@ -1,45 +1,51 @@
 {% extends 'base.html' %}
 
-{% block title %}Event List{% endblock %}
+{% block title %}Event Management System{% endblock %}
 
 {% block content %}
-  <div class="flex justify-between items-center mb-4">
+  <div class="flex justify-between items-center m-4">
     <h1 class="text-2xl font-bold">Event List</h1>
     <a href="{% url 'event_create' %}" class="bg-blue-600 text-white px-4 py-2 rounded">Create Event</a>
   </div>
-
-  {% if events %}
-    <div class="overflow-x-auto">
-      <table class="min-w-full bg-white border border-gray-200">
-        <thead>
-          <tr>
-            <th class="py-2 px-4 border">Name</th>
-            <th class="py-2 px-4 border">Date</th>
-            <th class="py-2 px-4 border">Time</th>
-            <th class="py-2 px-4 border">Location</th>
-            <th class="py-2 px-4 border">Category</th>
-            <th class="py-2 px-4 border">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for event in events %}
-          <tr>
-            <td class="py-2 px-4 border">{{ event.name }}</td>
-            <td class="py-2 px-4 border">{{ event.date }}</td>
-            <td class="py-2 px-4 border">{{ event.time }}</td>
-            <td class="py-2 px-4 border">{{ event.location }}</td>
-            <td class="py-2 px-4 border">{{ event.category }}</td>
-            <td class="py-2 px-4 border">
-              <a href="{% url 'event_detail' event.pk %}" class="text-blue-600 mr-2">View</a>
-              <a href="{% url 'event_update' event.pk %}" class="text-yellow-600 mr-2">Edit</a>
-              <a href="{% url 'event_delete' event.pk %}" class="text-red-600">Delete</a>
-            </td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
-  {% else %}
-    <p>No events available. <a href="{% url 'event_create' %}" class="text-blue-600">Create one here</a>.</p>
-  {% endif %}
+  <div class="w-full flex flex-wrap justify-center items-center">
+    {% if events %}
+      {% for event in events %}
+        <div class="flex items-center bg-white shadow-md rounded-lg m-4 p-4 gap-4 w-full">
+          <!-- Event Image -->
+          <div class="w-24 h-24 flex-shrink-0">
+              <img src="/static/images/home_event.jpg" alt="{{ event }}" class="w-full h-full object-cover rounded-md">
+          </div>
+      
+          <!-- Event Details -->
+          <div class="flex-1">
+              <!-- Event Name -->
+              <h2 class="text-lg font-bold text-gray-800">{{ event.name }}</h2>
+              
+              <!-- Category -->
+              <p class="text-sm text-gray-500">
+                  Category: <span class="text-blue-500 font-semibold">{{ event.category }}</span>
+              </p>
+          </div>
+      
+          <!-- Action Buttons -->
+          <div class="flex flex-col justify-center items-center sm:flex sm:flex-row">
+  
+            <!-- Update Button -->
+            <a href="{% url 'event_update' event.id %}" 
+               class="bg-yellow-500 text-white px-3 py-1 m-2 rounded-md hover:bg-yellow-600 text-sm">
+                Update
+            </a>
+          
+            <!-- Delete Button redirects to confirmation page -->
+            <a href="{% url 'event_delete' event.id %}" 
+               class="bg-red-500 text-white px-3 py-1 rounded-md hover:bg-red-600 text-sm">
+                Delete
+            </a>
+          </div>          
+        </div>
+      {% endfor %}
+    {% else %}
+      <p>No events available. <a href="{% url 'event_create' %}" class="text-blue-600">Create one here</a>.</p>
+    {% endif %}
+  </div>
 {% endblock %}
