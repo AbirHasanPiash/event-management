@@ -91,23 +91,23 @@ WSGI_APPLICATION = 'EventManagementSystem.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': config('DB_NAME'),
-        'USER': config('DB_USER'),
-        'PASSWORD': config('DB_PASSWORD'),
-        'HOST': config('DB_HOST'),
-        'PORT': config('DB_PORT'),
-    }
-}
-
 # DATABASES = {
-#     'default': dj_database_url.config(
-#         default='postgresql://event_management_db_eabw_user:56JkH3sQSAjjMJX8zX2paL7dJgJ46d3y@dpg-cvl82e9r0fns738aqrn0-a.oregon-postgres.render.com/event_management_db_eabw',
-#         conn_max_age=600
-#     )
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': config('DB_NAME'),
+#         'USER': config('DB_USER'),
+#         'PASSWORD': config('DB_PASSWORD'),
+#         'HOST': config('DB_HOST'),
+#         'PORT': config('DB_PORT'),
+#     }
 # }
+
+DATABASES = {
+    'default': dj_database_url.config(
+        default=config('RENDER_DB_URL'),
+        conn_max_age=600
+    )
+}
 
 
 # Password validation
