@@ -32,7 +32,7 @@
           <select name="category" class="p-3 border rounded-lg shadow-md focus:ring-2 focus:ring-blue-500 w-full max-w-md">
             <option value="">All Categories</option>
             {% for cat in categories %}
-              <option value="{{ cat.id }}" {% if category_filter == cat.id|stringformat:"s" %}selected{% endif %}>
+              <option value="{{ cat.id }}" {% if category_filter|slugify == cat.id|slugify %}selected{% endif %}>
                 {{ cat.name }}
               </option>
             {% endfor %}
@@ -73,7 +73,11 @@
           <div class="w-full sm:w-2/5 flex flex-col items-center bg-white rounded-lg p-4 m-4 gap-2 shadow-lg">
             <!-- Event Image -->
             <div class="w-full rounded-lg flex items-center justify-center">
-              <img src="/static/images/home_event.jpg" alt="{{ event.name }}" class="rounded-lg w-full h-40 object-cover">
+              {% if event.image %}
+                <img src="{{ event.image.url }}" alt="{{ event.name }}" class="rounded-lg w-full h-40 object-cover">
+              {% else %}
+                <img src="/static/images/default_img.jpg" alt="Default Event Image" class="rounded-lg w-full h-40 object-cover">
+              {% endif %}
             </div>
             <!-- Event Details -->
             <div class="w-full p-2 text-center">
@@ -84,8 +88,27 @@
               </p>
 
               <p class="text-sm mt-2">Participants:
-                <span class="font-bold">{{ event.participants.count }}</span>
+                <span class="font-bold">{{ event.participant_count }}</span>
               </p>
+              
+              {% if user.is_authenticated %}
+                {% if user in event.participants.all %}
+                  <form action="{% url 'cancel_rsvp' event.id %}" method="post" class="mt-1">
+                    {% csrf_token %}
+                    <button type="submit" class="bg-red-400 font-semibold px-3 py-2 rounded-lg hover:bg-red-500">Cancel RSVP</button>
+                  </form>
+                {% else %}
+                  <form action="{% url 'rsvp_event' event.id %}" method="post" class="mt-1">
+                    {% csrf_token %}
+                    <button type="submit" class="bg-green-400 font-semibold px-3 py-2 rounded-lg hover:bg-green-500">RSVP</button>
+                  </form>
+                {% endif %}
+              {% else %}
+              <a
+            href="{% url 'login' %}"
+            class="bg-green-400 font-semibold px-3 py-2 rounded-lg hover:bg-green-500"
+            >Login to RSVP</a>
+              {% endif %}              
 
               <a href="{% url 'event_detail' event.id %}" 
                  class="mt-3 inline-block bg-blue-500 text-white font-semibold px-4 py-2 rounded-lg hover:bg-blue-600">

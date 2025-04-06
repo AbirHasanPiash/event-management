@@ -1,12 +1,16 @@
 {% extends 'base.html' %}
 
-{% block title %}{{ event.name }} - Event Details{% endblock %}
+{% block title %}{{ event.name }}Event Details{% endblock %}
 
 {% block content %}
 <div class="container mx-auto px-4 py-8">
     <div class="max-w-4xl mx-auto bg-white shadow-lg rounded-lg overflow-hidden">
         <!-- Event Image -->
-        <img src="/static/images/home_event.jpg" alt="{{ event }}" class="w-full h-64 object-cover">
+        {% if event.image %}
+            <img src="{{ event.image.url }}" alt="{{ event.name }}" class="w-full h-64 object-cover">
+        {% else %}
+            <img src="/static/images/default_event.jpg" alt="Default Event Image" class="w-full h-64 object-cover">
+        {% endif %}
         
         <!-- Event Details -->
         <div class="p-6">
@@ -15,13 +19,13 @@
 
             <!-- Category -->
             <p class="mb-4">
-                <strong>Category:</strong> {{ event.category }}
+                <strong>Category:</strong> {{ event.category.name }}
             </p>
 
             <!-- Date & Time -->
             <div class="flex items-center space-x-4">
-                <p><strong>Date:</strong> {{ event.date }}</p>
-                <p><strong>Time:</strong> {{ event.time }}</p>
+                <p><strong>Date:</strong> {{ event.date|date:"F j, Y" }}</p>
+                <p><strong>Time:</strong> {{ event.time|time:"g:i A" }}</p>
             </div>
 
             <!-- Location -->
@@ -47,7 +51,7 @@
 
             <!-- Buttons -->
             <div class="mt-6 flex space-x-4">
-                <a href="{% url 'home' %}" class="text-white bg-blue-500 px-4 py-2 rounded-lg hover:bg-blue-700">
+                <a href="{% url 'home' %}" class="text-white bg-blue-500 px-3 py-2 rounded-lg hover:bg-blue-700">
                     Back to Events
                 </a>
             </div>

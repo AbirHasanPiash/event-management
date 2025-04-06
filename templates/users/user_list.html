@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block title %} Users List {% endblock %}
+
+{% block content %}
+<div class="container mx-auto p-8">
+    <h1 class="text-3xl font-bold text-gray-800 mb-6 text-center">Users List</h1>
+    
+    {% if users %}
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {% for user in users %}
+        <div class="bg-white shadow-md rounded-lg p-6 flex flex-col items-center">
+            <div class="text-lg font-semibold text-gray-900">{{ user.username }}</div>
+            <p class="text-gray-600">{{ user.email }}</p>
+            
+            <div class="mt-4 flex space-x-3">
+                <a href="{% url 'user_update' user.pk %}" class="bg-yellow-500 text-white px-4 py-2 rounded-lg hover:bg-yellow-600 shadow-md">Update</a>
+                <a href="{% url 'user_delete' user.pk %}" class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 shadow-md">Delete</a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <p class="text-red-500 text-center text-lg font-semibold">No users found.</p>
+    {% endif %}
+</div>
+{% endblock %}

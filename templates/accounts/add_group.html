@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block title %}Add New Group{% endblock %}
+
+{% block content %}
+<div class="max-w-xl mx-auto bg-white p-6 mt-10 rounded-lg shadow-lg">
+    <h2 class="text-xl font-semibold mb-4">Add New Group</h2>
+    <form method="post" class="space-y-4">
+        {% csrf_token %}
+        <div>
+            <label for="name" class="block text-sm font-medium text-gray-700">Group Name</label>
+            <input type="text" name="name" id="name" required
+                class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+        </div>
+        <button type="submit"
+            class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">Create Group</button>
+    </form>
+
+    {% if messages %}
+    <div class="mt-4">
+        {% for message in messages %}
+        <div class="text-sm p-2 rounded bg-{{ message.tags }}-100 text-{{ message.tags }}-800">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

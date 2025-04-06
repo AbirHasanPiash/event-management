@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block title %}Manage Groups{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto p-6">
+    <div class="flex justify-between items-center mb-6">
+        <h2 class="text-2xl font-bold text-gray-800">Manage Groups</h2>
+        <a href="{% url 'add_group' %}" class="bg-green-600 text-white px-4 py-2 rounded-lg shadow hover:bg-green-700 transition">
+            + Add Group
+        </a>
+    </div>
+
+    <div class="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {% for group in groups %}
+        <div class="flex flex-col bg-white border rounded-xl shadow hover:shadow-lg transition p-4 justify-between">
+            <div>
+                <h3 class="text-lg font-semibold text-gray-800 mb-2">{{ group.name }}</h3>
+                <p class="text-sm text-gray-600 mb-4">Permissions: 
+                    <span class="font-medium text-gray-800">{{ group.permissions.count }}</span>
+                </p>
+            </div>
+            <div class="flex gap-4 text-sm">
+                <a href="{% url 'edit_group' group.id %}" class="text-blue-600 hover:underline">Edit</a>
+                <a href="{% url 'delete_group' group.id %}" class="text-red-600 hover:underline">Delete</a>
+                <a href="{% url 'assign_permissions' group.id %}" class="text-green-600 hover:underline">Assign Permissions</a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
