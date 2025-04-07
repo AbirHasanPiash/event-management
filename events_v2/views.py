@@ -3,7 +3,6 @@ from .models import Event, Category
 from .forms import EventForm, CategoryForm
 from django.contrib import messages
 from django.contrib.auth.models import User, Group, Permission
-from django.contrib.auth.forms import UserCreationForm
 from django.db.models import Count, Q
 from django.utils.dateparse import parse_date
 from django.utils.timezone import now
@@ -59,13 +58,12 @@ def home(request):
 @login_required
 @user_passes_test(is_organizer, login_url='no-permission')
 def organizer_dashboard(request):
-    print("Inside Organizer dashboard")
     today = now().date()
 
     events = Event.objects.prefetch_related('participants') \
                           .annotate(participant_count=Count('participants', distinct=True))
 
-    total_participants = Event.objects.aggregate(total_sum=Count('participants', distinct=True))['total_sum']
+    total_participants = Event.objects.aggregate(total_sum=Count('participants'))['total_sum']
 
     event_counts = Event.objects.aggregate(
         total=Count('id'),
