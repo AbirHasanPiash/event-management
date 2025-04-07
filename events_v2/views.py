@@ -3,7 +3,7 @@ from .models import Event, Category
 from .forms import EventForm, CategoryForm
 from django.contrib import messages
 from django.contrib.auth.models import User, Group, Permission
-from django.db.models import Count, Q
+from django.db.models import Count, Q, Prefetch
 from django.utils.dateparse import parse_date
 from django.utils.timezone import now
 from django.contrib.auth.decorators import login_required, user_passes_test
@@ -27,8 +27,6 @@ def home(request):
     category_filter = request.GET.get('category', '')
     start_date = request.GET.get('start_date', '')
     end_date = request.GET.get('end_date', '')
-
-    # Start with base queryset
     events = Event.objects.select_related('category')
 
     # Apply filters
@@ -55,31 +53,74 @@ def home(request):
         'end_date': end_date
     })
 
+# @login_required
+# @user_passes_test(is_organizer, login_url='no-permission')
+# def organizer_dashboard(request):
+#     today = now().date()
+
+#     events = Event.objects.prefetch_related('participants') \
+#                           .annotate(participant_count=Count('participants', distinct=True))
+
+#     total_participants = Event.objects.aggregate(total_sum=Count('participants'))['total_sum']
+
+#     event_counts = Event.objects.aggregate(
+#         total=Count('id'),
+#         upcoming=Count('id', filter=Q(date__gte=today)),
+#         past=Count('id', filter=Q(date__lt=today))
+#     )
+
+#     todays_events = events.filter(date=today)
+
+#     filter_type = request.GET.get('filter', 'all')
+#     if filter_type == "upcoming":
+#         filtered_events = events.filter(date__gte=today)
+#     elif filter_type == "past":
+#         filtered_events = events.filter(date__lt=today)
+#     else:
+#         filtered_events = events
+
+#     return render(request, 'accounts/organizer_dashboard.html', {
+#         'total_participants': total_participants,
+#         'total_events': event_counts['total'],
+#         'upcoming_events': event_counts['upcoming'],
+#         'past_events': event_counts['past'],
+#         'todays_events': todays_events,
+#         'events': filtered_events,
+#         'filter_type': filter_type
+#     })
+
 @login_required
 @user_passes_test(is_organizer, login_url='no-permission')
 def organizer_dashboard(request):
     today = now().date()
 
-    events = Event.objects.prefetch_related('participants') \
-                          .annotate(participant_count=Count('participants', distinct=True))
+    # Base queryset optimized
+    base_events_qs = Event.objects.select_related('category') \
+                                   .prefetch_related('participants') \
+                                   .annotate(participant_count=Count('participants', distinct=True))
 
-    total_participants = Event.objects.aggregate(total_sum=Count('participants'))['total_sum']
+    # Use base queryset for all filtered versions
+    filter_type = request.GET.get('filter', 'all')
+    if filter_type == "upcoming":
+        filtered_events = base_events_qs.filter(date__gte=today)
+    elif filter_type == "past":
+        filtered_events = base_events_qs.filter(date__lt=today)
+    else:
+        filtered_events = base_events_qs
 
-    event_counts = Event.objects.aggregate(
+    # Today's events (reuse base queryset to preserve annotations)
+    todays_events = base_events_qs.filter(date=today)
+
+    # Total participants (use distinct count on base queryset)
+    total_participants = total_participants = Event.objects.aggregate(total_sum=Count('participants'))['total_sum']
+
+
+    # Event counts
+    event_counts = base_events_qs.aggregate(
         total=Count('id'),
         upcoming=Count('id', filter=Q(date__gte=today)),
         past=Count('id', filter=Q(date__lt=today))
     )
-
-    todays_events = events.filter(date=today)
-
-    filter_type = request.GET.get('filter', 'all')
-    if filter_type == "upcoming":
-        filtered_events = events.filter(date__gte=today)
-    elif filter_type == "past":
-        filtered_events = events.filter(date__lt=today)
-    else:
-        filtered_events = events
 
     return render(request, 'accounts/organizer_dashboard.html', {
         'total_participants': total_participants,
@@ -120,7 +161,7 @@ def admin_dashboard(request):
 @login_required
 @user_passes_test(is_admin, login_url='no-permission')
 def manage_users(request):
-    users = User.objects.all()
+    users = User.objects.prefetch_related('groups').all()
     return render(request, 'accounts/manage_users.html', {'users': users})
 
 @login_required
@@ -160,7 +201,7 @@ def delete_user(request, user_id):
 @login_required
 @user_passes_test(is_admin, login_url='no-permission')
 def manage_groups(request):
-    groups = Group.objects.all()
+    groups = Group.objects.prefetch_related('permissions').all()
     return render(request, 'accounts/manage_groups.html', {'groups': groups})
 
 
@@ -170,16 +211,23 @@ def assign_permissions(request, group_id):
     group = get_object_or_404(Group, id=group_id)
     all_permissions = Permission.objects.all()
 
+    group_permission_ids = set(group.permissions.values_list('id', flat=True))
+
     if request.method == 'POST':
-        selected_permissions = request.POST.getlist('permissions')
-        group.permissions.set(selected_permissions)
-        messages.success(request, f'Permissions updated for group: {group.name}')
-        return redirect('manage_groups')  # Replace with your group list view name
+        selected_permissions = set(map(int, request.POST.getlist('permissions')))
+        if selected_permissions != group_permission_ids:
+            group.permissions.set(selected_permissions)
+            messages.success(request, f'Permissions updated for group: {group.name}')
+        else:
+            messages.info(request, 'No changes made.')
+        return redirect('manage_groups')
 
     return render(request, 'accounts/assign_permissions.html', {
         'group': group,
         'all_permissions': all_permissions,
+        'group_permission_ids': group_permission_ids,
     })
+
 
 @login_required
 @user_passes_test(is_admin, login_url='no-permission')

@@ -26,10 +26,10 @@
                 </p>
             </div>
 
-            <div class="flex gap-4 mt-4 sm:mt-0 sm:ml-6">
-                <a href="{% url 'edit_user' user.id %}" class="text-blue-600 hover:underline text-sm">Edit</a>
-                <a href="{% url 'delete_user' user.id %}" class="text-red-600 hover:underline text-sm">Delete</a>
-                <a href="{% url 'assign_role' user.id %}" class="text-green-600 hover:underline text-sm">Assign Role</a>
+            <div class="flex flex-wrap gap-2 mt-4 sm:mt-0 sm:ml-6">
+                <a href="{% url 'edit_user' user.id %}" class="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 transition">Edit</a>
+                <a href="{% url 'delete_user' user.id %}" class="px-3 py-1 text-sm bg-red-600 text-white rounded hover:bg-red-700 transition">Delete</a>
+                <a href="{% url 'assign_role' user.id %}" class="px-3 py-1 text-sm bg-green-600 text-white rounded hover:bg-green-700 transition">Assign Role</a>
             </div>
         </div>
         {% endfor %}

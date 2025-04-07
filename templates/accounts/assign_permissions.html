@@ -14,8 +14,8 @@
                     type="checkbox"
                     name="permissions"
                     value="{{ permission.id }}"
-                    {% if permission in group.permissions.all %}checked{% endif %}
                     class="form-checkbox"
+                    {% if permission.id in group_permission_ids %}checked{% endif %}
                 >
                 <span>{{ permission.name }}</span>
             </label>
