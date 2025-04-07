@@ -29,10 +29,8 @@ def home(request):
     start_date = request.GET.get('start_date', '')
     end_date = request.GET.get('end_date', '')
 
-    # Start with base queryset
     events = Event.objects.select_related('category')
 
-    # Apply filters
     if query:
         events = events.filter(name__icontains=query)
     
@@ -42,7 +40,6 @@ def home(request):
     if start_date and end_date:
         events = events.filter(date__range=[parse_date(start_date), parse_date(end_date)])
 
-    # Annotate after filtering
     events = events.annotate(participant_count=Count('participants')).prefetch_related('participants')
 
     categories = Category.objects.only('id', 'name')
