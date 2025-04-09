@@ -280,7 +280,8 @@ def assign_role(request, user_id):
     if request.method == 'POST':
         selected_group_ids = request.POST.getlist('groups')
         selected_groups = Group.objects.filter(id__in=selected_group_ids)
-        user.groups.add(*selected_groups)  # Add without removing existing groups
+        user.groups.clear()
+        user.groups.add(*selected_groups)
         user.save()
         messages.success(request, f'Role(s) assigned to {user.username}.')
         return redirect('manage_users')
