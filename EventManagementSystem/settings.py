@@ -106,8 +106,7 @@ WSGI_APPLICATION = 'EventManagementSystem.wsgi.application'
 
 DATABASES = {
     'default': dj_database_url.config(
-        default=config('RENDER_DB_URL'),
-        conn_max_age=600
+        default=config('RAILWAY_DB_URL'),
     )
 }
 
