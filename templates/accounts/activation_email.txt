@@ -1,0 +1,9 @@
+Hi {{ user.first_name }},
+
+Thank you for registering. Please activate your account by visiting the link below:
+
+{{ activation_url }}
+
+If you didn't sign up, just ignore this email.
+
+- Event Management Team

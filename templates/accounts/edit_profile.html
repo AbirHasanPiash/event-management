@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto mt-14 px-6 py-10 bg-white rounded-2xl shadow-lg">
+  <h2 class="text-3xl font-bold text-gray-800 mb-8">Edit Profile</h2>
+
+  <form method="POST" enctype="multipart/form-data" class="space-y-6">
+    {% csrf_token %}
+
+    <!-- Username (disabled) -->
+    <div>
+      <label for="{{ form.username.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">Username</label>
+      {{ form.username }}
+    </div>
+
+    <!-- First & Last Name -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div>
+        <label for="{{ form.first_name.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">First Name</label>
+        {{ form.first_name }}
+      </div>
+      <div>
+        <label for="{{ form.last_name.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
+        {{ form.last_name }}
+      </div>
+    </div>
+
+    <!-- Email -->
+    <div>
+      <label for="{{ form.email.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+      {{ form.email }}
+    </div>
+
+    <!-- Phone Number -->
+    <div>
+      <label for="{{ form.phone_number.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+      {{ form.phone_number }}
+    </div>
+
+    <!-- Profile Picture -->
+    <div>
+      <label for="{{ form.profile_picture.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">Profile Picture</label>
+      {% if user.profile_picture %}
+        <img src="{{ user.profile_picture.url }}" alt="Current Profile Picture" class="w-24 h-24 object-cover rounded-full mb-3 border">
+      {% endif %}
+      {{ form.profile_picture }}
+    </div>
+
+    <!-- Submit -->
+    <div class="pt-4">
+      <button type="submit" class="inline-flex items-center px-6 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition duration-200">
+        Save Changes
+      </button>
+    </div>
+  </form>
+</div>
+{% endblock %}

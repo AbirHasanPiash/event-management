@@ -2,9 +2,11 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    path('organizer-dashboard/', views.organizer_dashboard, name='organizer_dashboard'),
+    path('profile/', views.ProfileView.as_view(), name='user_profile'),
+    path('edit-profile/', views.edit_profile, name='edit_profile'),
+    path('organizer-dashboard/', views.OrganizerDashboardView.as_view(), name='organizer_dashboard'),
     path('user-dashboard/', views.user_dashboard, name='user_dashboard'),
-    path('admin-dashboard/', views.admin_dashboard, name='admin_dashboard'),
+    path('admin-dashboard/', views.AdminDashboardView.as_view(), name='admin_dashboard'),
     path('manage-users/', views.manage_users, name='manage_users'),
     path('manage-groups/', views.manage_groups, name='manage_groups'),
     path('groups/edit/<int:group_id>/', views.edit_group, name='edit_group'),
