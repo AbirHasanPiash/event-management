@@ -170,6 +170,6 @@ EMAIL_PORT = config('EMAIL_PORT')
 EMAIL_HOST_USER = config('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
 
-FRONTEND_URL = 'http://127.0.0.1:8000'
+FRONTEND_URL = config('FRONTEND_URL')
 # FRONTEND_URL = 'https://event-management-2-h39c.onrender.com'
 # FRONTEND_URL = 'https://event-management-production-6e20.up.railway.app'
