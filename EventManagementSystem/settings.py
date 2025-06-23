@@ -30,7 +30,7 @@ SECRET_KEY = config('SECRET_KEY')
 DEBUG = True
 
 ALLOWED_HOSTS = ['*']
-CSRF_TRUSTED_ORIGINS = ['https://*.up.railway.app', 'https://*.onrender.com', 'http://127.0.0.1:8000']
+CSRF_TRUSTED_ORIGINS = ['https://*.onrender.com', 'http://127.0.0.1:8000']
 
 
 # Application definition
@@ -104,9 +104,16 @@ WSGI_APPLICATION = 'EventManagementSystem.wsgi.application'
 #     }
 # }
 
+# DATABASES = {
+#     'default': dj_database_url.config(
+#         default=config('RAILWAY_DB_URL'),
+#     )
+# }
+
 DATABASES = {
     'default': dj_database_url.config(
-        default=config('RAILWAY_DB_URL'),
+        default=config('RENDER_DB_URL'),
+        conn_max_age=600
     )
 }
 
@@ -163,6 +170,6 @@ EMAIL_PORT = config('EMAIL_PORT')
 EMAIL_HOST_USER = config('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
 
-# FRONTEND_URL = 'http://127.0.0.1:8000'
+FRONTEND_URL = 'http://127.0.0.1:8000'
 # FRONTEND_URL = 'https://event-management-2-h39c.onrender.com'
-FRONTEND_URL = 'https://event-management-production-6e20.up.railway.app'
+# FRONTEND_URL = 'https://event-management-production-6e20.up.railway.app'
