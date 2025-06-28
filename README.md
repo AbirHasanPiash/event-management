@@ -3,6 +3,7 @@
 A modern and fully functional **Event Management System** built with Django (MVT architecture), PostgreSQL, HTML, and Tailwind CSS. This platform allows **users, event organizers, and admins** to manage events, RSVP, and notifications with secure access control and email verification.
 
 ---
+> 🔗 **[Live Demo](https://event-management-bjru.onrender.com/)** 
 
 ## 🚀 Features
 
