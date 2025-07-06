@@ -2,7 +2,7 @@
 module.exports = {
   content: [
     './templates/**/*.html',
-    './events/templates/**/*.html',
+    './events_v3/templates/**/*.html',
   ],
   theme: {
     extend: {},

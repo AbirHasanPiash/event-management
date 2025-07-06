@@ -2,13 +2,8 @@ from django.shortcuts import render, get_object_or_404, redirect
 from .models import Event, Category
 from .forms import EventForm, CategoryForm
 from django.contrib import messages
-<<<<<<<< HEAD:events_v2/views.py
-from django.contrib.auth.models import User, Group, Permission
-from django.db.models import Count, Q, Prefetch
-========
 from django.contrib.auth.models import Group, Permission
 from django.db.models import Count, Q
->>>>>>>> mid-term-exam:events_v3/views.py
 from django.utils.dateparse import parse_date
 from django.utils.timezone import now, localtime
 from django.contrib.auth.decorators import login_required, user_passes_test
@@ -40,10 +35,7 @@ def home(request):
     category_filter = request.GET.get('category', '')
     start_date = request.GET.get('start_date', '')
     end_date = request.GET.get('end_date', '')
-<<<<<<<< HEAD:events_v2/views.py
-========
 
->>>>>>>> mid-term-exam:events_v3/views.py
     events = Event.objects.select_related('category')
 
     if query:
@@ -68,43 +60,6 @@ def home(request):
         'end_date': end_date
     })
 
-<<<<<<<< HEAD:events_v2/views.py
-# @login_required
-# @user_passes_test(is_organizer, login_url='no-permission')
-# def organizer_dashboard(request):
-#     today = now().date()
-
-#     events = Event.objects.prefetch_related('participants') \
-#                           .annotate(participant_count=Count('participants', distinct=True))
-
-#     total_participants = Event.objects.aggregate(total_sum=Count('participants'))['total_sum']
-
-#     event_counts = Event.objects.aggregate(
-#         total=Count('id'),
-#         upcoming=Count('id', filter=Q(date__gte=today)),
-#         past=Count('id', filter=Q(date__lt=today))
-#     )
-
-#     todays_events = events.filter(date=today)
-
-#     filter_type = request.GET.get('filter', 'all')
-#     if filter_type == "upcoming":
-#         filtered_events = events.filter(date__gte=today)
-#     elif filter_type == "past":
-#         filtered_events = events.filter(date__lt=today)
-#     else:
-#         filtered_events = events
-
-#     return render(request, 'accounts/organizer_dashboard.html', {
-#         'total_participants': total_participants,
-#         'total_events': event_counts['total'],
-#         'upcoming_events': event_counts['upcoming'],
-#         'past_events': event_counts['past'],
-#         'todays_events': todays_events,
-#         'events': filtered_events,
-#         'filter_type': filter_type
-#     })
-========
 
 class ProfileView(LoginRequiredMixin, TemplateView):
     template_name = 'accounts/profile.html'
@@ -189,25 +144,16 @@ class OrganizerDashboardView(LoginRequiredMixin, OrganizerRequiredMixin, View):
 
         return render(request, 'accounts/organizer_dashboard.html', context)
 
->>>>>>>> mid-term-exam:events_v3/views.py
 
 @login_required
 @user_passes_test(is_organizer, login_url='no-permission')
 def organizer_dashboard(request):
     today = now().date()
 
-<<<<<<<< HEAD:events_v2/views.py
-    # Base queryset optimized
-========
->>>>>>>> mid-term-exam:events_v3/views.py
     base_events_qs = Event.objects.select_related('category') \
                                    .prefetch_related('participants') \
                                    .annotate(participant_count=Count('participants', distinct=True))
 
-<<<<<<<< HEAD:events_v2/views.py
-    # Use base queryset for all filtered versions
-========
->>>>>>>> mid-term-exam:events_v3/views.py
     filter_type = request.GET.get('filter', 'all')
     if filter_type == "upcoming":
         filtered_events = base_events_qs.filter(date__gte=today)
@@ -216,21 +162,10 @@ def organizer_dashboard(request):
     else:
         filtered_events = base_events_qs
 
-<<<<<<<< HEAD:events_v2/views.py
-    # Today's events (reuse base queryset to preserve annotations)
-    todays_events = base_events_qs.filter(date=today)
-
-    # Total participants (use distinct count on base queryset)
-    total_participants = total_participants = Event.objects.aggregate(total_sum=Count('participants'))['total_sum']
-
-
-    # Event counts
-========
     todays_events = base_events_qs.filter(date=today)
 
     total_participants = total_participants = Event.objects.aggregate(total_sum=Count('participants'))['total_sum']
 
->>>>>>>> mid-term-exam:events_v3/views.py
     event_counts = base_events_qs.aggregate(
         total=Count('id'),
         upcoming=Count('id', filter=Q(date__gte=today)),
@@ -330,23 +265,16 @@ def assign_permissions(request, group_id):
     group = get_object_or_404(Group, id=group_id)
     all_permissions = Permission.objects.all()
 
-    group_permission_ids = set(group.permissions.values_list('id', flat=True))
-
     if request.method == 'POST':
-        selected_permissions = set(map(int, request.POST.getlist('permissions')))
-        if selected_permissions != group_permission_ids:
-            group.permissions.set(selected_permissions)
-            messages.success(request, f'Permissions updated for group: {group.name}')
-        else:
-            messages.info(request, 'No changes made.')
-        return redirect('manage_groups')
+        selected_permissions = request.POST.getlist('permissions')
+        group.permissions.set(selected_permissions)
+        messages.success(request, f'Permissions updated for group: {group.name}')
+        return redirect('manage_groups')  # Replace with your group list view name
 
     return render(request, 'accounts/assign_permissions.html', {
         'group': group,
         'all_permissions': all_permissions,
-        'group_permission_ids': group_permission_ids,
     })
-
 
 @login_required
 @user_passes_test(is_admin, login_url='no-permission')
@@ -399,12 +327,6 @@ def assign_role(request, user_id):
     if request.method == 'POST':
         selected_group_ids = request.POST.getlist('groups')
         selected_groups = Group.objects.filter(id__in=selected_group_ids)
-<<<<<<<< HEAD:events_v2/views.py
-        user.groups.clear()
-        user.groups.add(*selected_groups)
-        user.save()
-        messages.success(request, f'Role(s) assigned to {user.username}.')
-========
         current_group_ids = set(user.groups.values_list('id', flat=True))
         new_group_ids = set(map(int, selected_group_ids))
 
@@ -414,7 +336,6 @@ def assign_role(request, user_id):
         else:
             messages.info(request, f'No changes made to {user.username} roles.')
 
->>>>>>>> mid-term-exam:events_v3/views.py
         return redirect('manage_users')
 
     return render(request, 'accounts/assign_role.html', {
