@@ -9,7 +9,7 @@
         {% if event.image %}
             <img src="{{ event.image.url }}" alt="{{ event.name }}" class="w-full h-64 object-cover">
         {% else %}
-            <img src="/static/images/default_event.jpg" alt="Default Event Image" class="w-full h-64 object-cover">
+            <img src="/static/images/default_img.jpg" alt="Default Event Image" class="w-full h-64 object-cover">
         {% endif %}
         
         <!-- Event Details -->
@@ -42,7 +42,7 @@
                 <strong>Participants:</strong>
                 <ul class="list-disc pl-5 mt-2">
                     {% for participant in event.participants.all %}
-                        <li>{{ participant.name }} ({{ participant.email }})</li>
+                        <li>{{ participant.username }}</li>
                     {% empty %}
                         <li>No participants yet.</li>
                     {% endfor %}

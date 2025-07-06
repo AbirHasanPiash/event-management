@@ -13,9 +13,12 @@ from decouple import config
 import os
 from pathlib import Path
 import dj_database_url
+import cloudinary
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+AUTH_USER_MODEL = 'events_v3.CustomUser'
 
 
 # Quick-start development settings - unsuitable for production
@@ -25,15 +28,16 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = config('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = ['*']
-CSRF_TRUSTED_ORIGINS = ['https://*.onrender.com', 'http://127.0.0.1:8000']
+ALLOWED_HOSTS = ['.vercel.app', '127.0.0.1']
+CSRF_TRUSTED_ORIGINS = ['https://*.vercel.app', 'http://127.0.0.1:8000']
 
 
 # Application definition
 
 INSTALLED_APPS = [
+    "whitenoise.runserver_nostatic",
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -41,7 +45,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     "debug_toolbar",
-    'events_v2',
+    'events_v3',
     'accounts',
 ]
 
@@ -49,6 +53,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     "debug_toolbar.middleware.DebugToolbarMiddleware",
     'django.middleware.security.SecurityMiddleware',
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -85,29 +90,35 @@ MEDIA_ROOT = BASE_DIR / 'media'
 TEMPLATES[0]['DIRS'] = [os.path.join(BASE_DIR, 'templates')]
 
 
-WSGI_APPLICATION = 'EventManagementSystem.wsgi.application'
+WSGI_APPLICATION = 'EventManagementSystem.wsgi.app'
 
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': config('dbname'),
+        'USER': config('user'),
+        'PASSWORD': config('password'),
+        'HOST': config('host'),
+        'PORT': config('port'),
+    }
+}
+
 # DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME': config('DB_NAME'),
-#         'USER': config('DB_USER'),
-#         'PASSWORD': config('DB_PASSWORD'),
-#         'HOST': config('DB_HOST'),
-#         'PORT': config('DB_PORT'),
-#     }
+#     'default': dj_database_url.config(
+#         default=config('RAILWAY_DB_URL'),
+#     )
 # }
 
-DATABASES = {
-    'default': dj_database_url.config(
-        default=config('RENDER_DB_URL'),
-        conn_max_age=600
-    )
-}
+# DATABASES = {
+#     'default': dj_database_url.config(
+#         default=config('RENDER_DB_URL'),
+#         conn_max_age=600
+#     )
+# }
 
 
 # Password validation
@@ -134,7 +145,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Dhaka'
 
 USE_I18N = True
 
@@ -150,6 +161,20 @@ STATICFILES_DIRS = [
     BASE_DIR / 'static'
 ]
 
+STATIC_ROOT = BASE_DIR / "staticfiles"
+
+STATICFILES_STORAGE = "whitenoise.storage.CompressedStaticFilesStorage"
+
+# Cloudinary Configuration       
+cloudinary.config( 
+    cloud_name = config('cloud_name'),
+    api_key = config('api_key'),
+    api_secret = config('api_secret'),
+    secure=True
+)
+
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
@@ -162,5 +187,6 @@ EMAIL_PORT = config('EMAIL_PORT')
 EMAIL_HOST_USER = config('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
 
-FRONTEND_URL = 'https://event-management-2-h39c.onrender.com'
-# FRONTEND_URL = 'http://127.0.0.1:8000'
+FRONTEND_URL = config('FRONTEND_URL')
+# FRONTEND_URL = 'https://event-management-2-h39c.onrender.com'
+# FRONTEND_URL = 'https://event-management-production-6e20.up.railway.app'

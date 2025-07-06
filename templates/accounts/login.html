@@ -33,10 +33,13 @@
             </div>
 
             <div class="flex justify-between items-center mt-6">
+                <a href="{% url 'password_reset' %}" class="text-blue-600 hover:underline">Forgot password?</a>
+                <a href="{% url 'signup' %}" class="text-blue-600 hover:underline">Don't have an account? Sign up</a>
+            </div>
+            <div class="flex justify-center items-center">
                 <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg">
                     Login
                 </button>
-                <a href="{% url 'signup' %}" class="text-blue-600 hover:underline">Don't have an account? Sign up</a>
             </div>
         </form>
     </div>
