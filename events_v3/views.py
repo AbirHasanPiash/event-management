@@ -269,7 +269,7 @@ def assign_permissions(request, group_id):
         selected_permissions = request.POST.getlist('permissions')
         group.permissions.set(selected_permissions)
         messages.success(request, f'Permissions updated for group: {group.name}')
-        return redirect('manage_groups')  # Replace with your group list view name
+        return redirect('manage_groups')
 
     return render(request, 'accounts/assign_permissions.html', {
         'group': group,
